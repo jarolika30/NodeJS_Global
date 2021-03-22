@@ -1,0 +1,9 @@
+node_modules
+.idea/
+.vscode/
+coverage/
+setupTests.ts
+test-report.json
+yarn-error.log
+build
+dist
