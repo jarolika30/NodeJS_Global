@@ -1,5 +1,20 @@
-let add = (a, b) => {
-    return a + b;
-};
+const express = require('express');
+const app = express();
+const router = express.Router();
+console.log('start');
 
-console.log(add(12, 13));
+app.listen(3000);
+app.use(express.json());
+app.use(router);
+
+router.get('/', (req, res) => {
+  console.log('res:', res);
+
+  res.json({ ok: true });
+})
+
+router.post('/user', (req, res) => {
+  let user = req.body;
+  data.push(user);
+  res.status(204).send();
+})
