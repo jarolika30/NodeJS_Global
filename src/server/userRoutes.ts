@@ -1,9 +1,9 @@
 import { IUser } from '../inrefaces/IUser';
 import { Users } from '../mockData/userCollection';
+import * as express from 'express';
+import { _ } from 'underscore';
 
-const express = require('express');
-const _ = require('underscore');
-const router = express.Router();
+export const router = express.Router();
 
 router.get('/', (req, res) => {
   res.header("Content-Type",'application/json');
@@ -123,5 +123,3 @@ function getAutoSuggestUsers(loginSubstring, limit) {
     })
     .slice(0, limit);
 }
-
-module.exports = router;

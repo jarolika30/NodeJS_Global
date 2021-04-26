@@ -1,8 +1,9 @@
 import { PORT } from './src/constants';
 import { db } from './src/config/postgre.config';
 
-const express = require('express');
-const router = require('./src/server/userRoutes');
+import * as express from 'express';
+import { router } from './src/server/userRoutes';
+
 const app = express();
 db.authenticate()
 .then(()=> console.log("DB Connected..."))
