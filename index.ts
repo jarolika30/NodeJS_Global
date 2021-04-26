@@ -2,7 +2,7 @@ import { PORT } from './src/constants';
 import { db } from './src/config/postgre.config';
 
 import * as express from 'express';
-import { router } from './src/server/userRoutes';
+import { router } from './src/routers/userRoutes';
 
 const app = express();
 db.authenticate()
