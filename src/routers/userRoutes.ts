@@ -1,17 +1,20 @@
-import { IUser } from '../inrefaces/IUser';
-import { Users } from '../mockData/userCollection';
+import { IUser } from '../interfaces/IUser';
+import { Users as MockUsers } from '../mockData/userCollection';
+import UsersService from '../services/users.service';
 import * as express from 'express';
 import { _ } from 'underscore';
 
 export const router = express.Router();
+const userService = new UsersService();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.header("Content-Type",'application/json');
-  res.send(JSON.stringify(Users, null, 4));
+  const users = await UsersService.getAll();
+  res.send(JSON.stringify(users, null, 4));
 })
 
-router.get('/user/:id', (req, res) => {
-  const user = _.find(Users, { id: req.params.id });
+router.get('/user/:id', async (req, res) => {
+  const user = await UsersService.getUser(req.params.id);
 
   if (user) {
     res.status(200).send(JSON.stringify(user, null, 4));
@@ -23,10 +26,10 @@ router.get('/user/:id', (req, res) => {
 });
 
 router.delete('/user/:id', (req, res) => {
-  const userExist = _.find(Users, { id: req.params.id });
+  const userExist = _.find(MockUsers, { id: req.params.id });
 
   if (userExist) {
-    Users.forEach(user => {
+    MockUsers.forEach(user => {
       if (user.id === req.params.id) {
         user.isDeleted = true;
       }
@@ -45,10 +48,10 @@ router.delete('/user/:id', (req, res) => {
 });
 
 router.put('/user/:id', (req, res) => {
-  const userExist = _.find(Users, { id: req.params.id });
+  const userExist = _.find(MockUsers, { id: req.params.id });
 
   if (userExist) {
-    Users.forEach(user => {
+    MockUsers.forEach(user => {
       if (user.id === req.body.id) {
         user.id = req.body.id;
         user.id = req.body.name;
@@ -72,7 +75,7 @@ router.put('/user/:id', (req, res) => {
 });
 
 router.post('/addUser', (req, res) => {
-  const userExist = _.find(Users, { id: req.body.id });
+  const userExist = _.find(MockUsers, { id: req.body.id });
 
   if (!userExist) {
     const user: IUser = {
@@ -84,7 +87,7 @@ router.post('/addUser', (req, res) => {
       isDeleted: false
     };
 
-    Users.push(user);
+    MockUsers.push(user);
       res.status(200).json({
       message: `User created successfully`
     });
@@ -110,7 +113,7 @@ router.get('/autoSuggest', (req, res) => {
 });
 
 function getAutoSuggestUsers(loginSubstring, limit) {
-  return Users.filter(user => user.login
+  return MockUsers.filter(user => user.login
     .startsWith(loginSubstring))
     .sort((userPrev, userNext) => {
       if ( userPrev.login < userNext.login ){
