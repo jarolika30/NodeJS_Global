@@ -1,15 +1,16 @@
 import { IUser } from '../interfaces/IUser';
+import { ICreateUser } from '../interfaces/ICreateUser';
 import { Users as MockUsers } from '../mockData/userCollection';
 import UsersService from '../services/users.service';
 import * as express from 'express';
 import { _ } from 'underscore';
 
 export const router = express.Router();
-const userService = new UsersService();
 
 router.get('/', async (req, res) => {
   res.header("Content-Type",'application/json');
   const users = await UsersService.getAll();
+
   res.send(JSON.stringify(users, null, 4));
 })
 
@@ -31,7 +32,7 @@ router.delete('/user/:id', (req, res) => {
   if (userExist) {
     MockUsers.forEach(user => {
       if (user.id === req.params.id) {
-        user.isDeleted = true;
+        user.isdeleted = true;
       }
 
       return user;
@@ -58,7 +59,7 @@ router.put('/user/:id', (req, res) => {
         user.login = req.body.login;
         user.password = req.body.login;
         user.age = req.body.age;
-        user.isDeleted = false;
+        user.isdeleted = false;
       }
       
       return user;
@@ -74,26 +75,28 @@ router.put('/user/:id', (req, res) => {
   }
 });
 
-router.post('/addUser', (req, res) => {
-  const userExist = _.find(MockUsers, { id: req.body.id });
+router.post('/addUser', async (req, res) => {
+  const lastRecord = await UsersService.getLastRecord();
+
+  const user: IUser = {
+    id: +lastRecord.id + 1,
+    name: req.body.name,
+    login: req.body.login,
+    password: req.body.password,
+    age: req.body.age,
+    isdeleted: false
+  };
+
+  const userExist = await UsersService.findUser(user);
 
   if (!userExist) {
-    const user: IUser = {
-      id: req.body.id,
-      name: req.body.name,
-      login: req.body.login,
-      password: req.body.password,
-      age: req.body.age,
-      isDeleted: false
-    };
-
-    MockUsers.push(user);
-      res.status(200).json({
-      message: `User created successfully`
+    await UsersService.createUser(user);
+    res.status(200).json({
+      message: `User was created successfully`
     });
   } else {
     res.status(409).json({
-      message: `User with id ${req.body.id} already exist`
+      message: `User already exists`
     });
   }
 });

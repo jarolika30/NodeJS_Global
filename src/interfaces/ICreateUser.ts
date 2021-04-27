@@ -1,6 +1,5 @@
-export interface IUser {
+export interface ICreateUser {
   name: string;
-  id: number;
   login: string;
   password: string;
   age: number;
