@@ -1,4 +1,4 @@
-import { ICreateUser } from '../interfaces/ICreateUser';
+import { Op } from 'sequelize';
 import { IUser } from '../interfaces/IUser';
 import { Users } from '../models/usersModel';
 
@@ -27,9 +27,27 @@ export default class UsersService {
     .catch(err => err)
   }
 
+  static async deleteUser(user: IUser) {
+    return Users.update(user, {where: {id: user.id}})
+    .then(res => res)
+    .catch(err => err)
+  }
+
+  static async updateUser(user: IUser) {
+    return Users.update(user, {where: {id: user.id}})
+    .then(res => res)
+    .catch(err => err)
+  }
+
   static async getLastRecord() {
     return Users.findOne({ order: [['id', 'DESC']], limit: 1 })
     .then(res => res)
+    .catch(err => err)
+  }
+
+  static async getAutoSuggestUsers(loginSubstring, limit) {
+    return Users.findAll({ where: { login: { [Op.substring]: loginSubstring }}, limit: limit })
+    .then(users => users)
     .catch(err => err)
   }
 }

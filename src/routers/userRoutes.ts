@@ -1,5 +1,4 @@
 import { IUser } from '../interfaces/IUser';
-import { ICreateUser } from '../interfaces/ICreateUser';
 import { Users as MockUsers } from '../mockData/userCollection';
 import UsersService from '../services/users.service';
 import * as express from 'express';
@@ -20,23 +19,19 @@ router.get('/user/:id', async (req, res) => {
   if (user) {
     res.status(200).send(JSON.stringify(user, null, 4));
   } else {
-      res.status(404).json({
-          message: `User with id ${req.params.id} not found`
-      })
+    res.status(404).json({
+      message: `User with id ${req.params.id} not found`
+    })
   }
 });
 
-router.delete('/user/:id', (req, res) => {
-  const userExist = _.find(MockUsers, { id: req.params.id });
+router.delete('/user/:id', async (req, res) => {
+  const userExist = await UsersService.findUser(req.params.id);
 
   if (userExist) {
-    MockUsers.forEach(user => {
-      if (user.id === req.params.id) {
-        user.isdeleted = true;
-      }
+      userExist.isdeleted = true;
 
-      return user;
-    });
+      await UsersService.deleteUser(userExist);
 
     res.status(200).json({
       message: "User deleted successfully"
@@ -48,23 +43,20 @@ router.delete('/user/:id', (req, res) => {
   }
 });
 
-router.put('/user/:id', (req, res) => {
-  const userExist = _.find(MockUsers, { id: req.params.id });
+router.put('/user/:id', async (req, res) => {
+  const user: IUser = {
+    id: res.body.id,
+    name: req.body.name,
+    login: req.body.login,
+    password: req.body.password,
+    age: req.body.age,
+    isdeleted: false
+  };
+
+  const userExist = await UsersService.findUser(req.params.id);
 
   if (userExist) {
-    MockUsers.forEach(user => {
-      if (user.id === req.body.id) {
-        user.id = req.body.id;
-        user.id = req.body.name;
-        user.login = req.body.login;
-        user.password = req.body.login;
-        user.age = req.body.age;
-        user.isdeleted = false;
-      }
-      
-      return user;
-    });
-
+    await UsersService.updateUser(user);
     res.status(200).json({
       message: `User updated successfully`
     })
@@ -101,10 +93,10 @@ router.post('/addUser', async (req, res) => {
   }
 });
 
-router.get('/autoSuggest', (req, res) => {
+router.get('/autoSuggest', async (req, res) => {
   const searchString = req.query.search;
   const limit = req.query.limit;
-  const result = getAutoSuggestUsers(searchString, limit);
+  const result = await UsersService.getAutoSuggestUsers(searchString, limit);
 
   if (result.length) {
     res.send(JSON.stringify(result, null, 4));
@@ -114,18 +106,3 @@ router.get('/autoSuggest', (req, res) => {
     })
   }
 });
-
-function getAutoSuggestUsers(loginSubstring, limit) {
-  return MockUsers.filter(user => user.login
-    .startsWith(loginSubstring))
-    .sort((userPrev, userNext) => {
-      if ( userPrev.login < userNext.login ){
-        return -1;
-      }
-      if ( userPrev.login > userNext.login ){
-        return 1;
-      }
-      return 0;
-    })
-    .slice(0, limit);
-}
