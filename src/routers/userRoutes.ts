@@ -1,8 +1,6 @@
 import { IUser } from '../interfaces/IUser';
-import { Users as MockUsers } from '../mockData/userCollection';
 import UsersService from '../services/users.service';
 import * as express from 'express';
-import { _ } from 'underscore';
 
 export const router = express.Router();
 
