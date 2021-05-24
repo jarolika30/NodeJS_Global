@@ -1,5 +1,6 @@
 import { IGroup } from '../interfaces/IGroup';
-import { Groups } from '../models/groupModel';
+import { IUserGroups } from '../interfaces/IUserGroups';
+import { Groups, UserGroups } from '../models/groupModel';
 
 export default class GroupsService {
   static async getGroup( groupId : string | undefined) {
@@ -20,6 +21,17 @@ export default class GroupsService {
     .catch(err => err)
   }
 
+  static async addUsersToGroup(groupId, userId) {
+    const userGroups: IUserGroups = {
+      user_id: userId,
+      group_id: groupId
+    }
+
+    return UserGroups.create(userGroups)
+    .then(res => res)
+    .catch(err => err)
+  }
+
   static async updateGroup(group: IGroup) {
     return Groups.update(group, {where: {id: group.id}})
     .then(res => res)
@@ -28,6 +40,12 @@ export default class GroupsService {
 
   static async findGroupById(groupId: number) {
     return Groups.findOne({ where: { id: groupId } })
+    .then(res => res)
+    .catch(err => err)
+  }
+
+  static async findUsersToGroup(groupId: number, userId: number) {
+    return UserGroups.findOne({ where: { group_id: groupId, user_id: userId } })
     .then(res => res)
     .catch(err => err)
   }

@@ -82,3 +82,20 @@ groupRouter.post('/addGroup', async (req, res) => {
     });
   }
 });
+
+groupRouter.post('/addUsersToGroup', async (req, res) => {
+  const groupId = req.body.groupId;
+  const userId = req.body.userId;
+  const groupExist = await GroupsService.findUsersToGroup(groupId, userId);
+
+  if (!groupExist) {
+    await GroupsService.addUsersToGroup(groupId, userId);
+    res.status(200).json({
+      message: `The record was added successfully`
+    });
+  } else {
+    res.status(409).json({
+      message: `Such a record already exists`
+    });
+  }
+});
