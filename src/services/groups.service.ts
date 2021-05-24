@@ -20,7 +20,7 @@ export default class GroupsService {
     .catch(err => err)
   }
 
-  static async deleteGroup(group: IGroup) {
+  static async updateGroup(group: IGroup) {
     return Groups.update(group, {where: {id: group.id}})
     .then(res => res)
     .catch(err => err)
@@ -44,8 +44,8 @@ export default class GroupsService {
     .catch(err => err)
   }
 
-  static async updateGroup(group: IGroup) {
-    return Groups.destroy(group, {where: {id: group.id}})
+  static async deleteGroup(group: IGroup) {
+    return Groups.destroy({where: {id: group.id}})
     .then(res => res)
     .catch(err => err)
   }
