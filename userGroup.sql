@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS user_groups (
+  user_id BIGINT NOT NULL,
+  group_id BIGINT NOT NULL,
+  PRIMARY KEY (user_id, group_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELEtE CASCADE ON UPDATE CASCADE,
+  FOREIGN KeY (group_id) REFERENCES groups(id) ON DELEtE CASCADE ON UPDATE CASCADE
+);
